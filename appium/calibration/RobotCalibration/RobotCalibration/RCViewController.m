@@ -31,6 +31,8 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+	[self becomeFirstResponder];
+	
 }
 
 - (void)didReceiveMemoryWarning
@@ -39,8 +41,42 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)handleTap:(UIGestureRecognizer *)gestureRecognizer {
-	CGPoint locationInView = [gestureRecognizer locationInView:self.view];
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	if ([[event allTouches] count] == 0) {
+		return;
+	}
+
+	//UITouch *touch = [touches anyObject];
+	for (UIView *view in self.view.subviews) {
+		[view removeFromSuperview];
+	}
+	for (UITouch *touch in [[event allTouches] allObjects]) {
+		[self displayCoordinatesForTouch:touch];
+	}
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	if ([[event allTouches] count] == 0) {
+		return;
+	}
+	//UITouch *touch = [touches anyObject];
+	for (UIView *view in self.view.subviews) {
+		[view removeFromSuperview];
+	}
+	for (UITouch *touch in [[event allTouches] allObjects]) {
+		[self displayCoordinatesForTouch:touch];
+	}
+
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+	for (UIView *view in self.view.subviews) {
+		[view removeFromSuperview];
+	}
+}
+
+- (void)displayCoordinatesForTouch:(UITouch *)touch {
+	CGPoint locationInView = [touch locationInView:self.view];
 	
 	// Calculate the Coordinate Label Frame
 	CGRect coordinateLabelFrame = CGRectMake(0, 0, 0, 0);
@@ -51,8 +87,10 @@
 	coordinateLabelFrame.origin.y = MIN(MAX(locationInView.y - 30, 40), self.view.frame.size.height - coordinateLabelFrame.size.height - 40);
 	
 	// Set the frame and test of the label
-	self.coordinateLabel.frame = coordinateLabelFrame;
-	self.coordinateLabel.text = [NSString stringWithFormat:@"(%d, %d)", (int)locationInView.x, (int)locationInView.y];
-	self.coordinateLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:18.0f];
+	UILabel *coordinateLabel = [[UILabel alloc] initWithFrame:coordinateLabelFrame];
+	coordinateLabel.text = [NSString stringWithFormat:@"(%d, %d)", (int)locationInView.x, (int)locationInView.y];
+	coordinateLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:18.0f];
+	[self.view addSubview:coordinateLabel];
 }
+
 @end
